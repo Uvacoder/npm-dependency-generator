@@ -22,4 +22,5 @@ yarn-debug.log*
 yarn-error.log*
 
 # Dotenv files
+.env
 .env*.local
