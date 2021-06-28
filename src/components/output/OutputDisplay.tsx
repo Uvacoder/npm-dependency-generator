@@ -135,7 +135,7 @@ function OutputDisplay({ packageName, className } : OutputDisplayProps) {
             </Tabs.Item>
           </Tabs>
         )
-        : (status !== 'error') && <Loading size="large" />}
+        : (status === 'loading') && <Loading size="large" />}
     </div>
   );
 }
