@@ -1,33 +1,28 @@
-import React from 'react';
+import React, { useState } from 'react';
 
-import { Page, Text } from '@geist-ui/react';
-
+import { PackageInput } from '../components/input/PackageInput';
+import { OutputDisplay } from '../components/output/OutputDisplay';
 import { Meta } from '../layout/Meta';
 import { Main } from '../templates/Main';
 
-const Index = () => (
-  <Main
-    meta={(
-      <Meta
-        title="Next.js Boilerplate Presentation"
-        description="Next js Boilerplate is the perfect starter code for your project. Build your React application with the Next.js framework."
-      />
-    )}
-  >
+function Index() {
+  const [packageName, setPackageName] = useState('');
 
-    <Page dotBackdrop size="mini">
-      <Page.Header>
-        <Text h2>React Application with Geist UI</Text>
-      </Page.Header>
-      <Text>
-        Hello, I am using
-        {' '}
-        <Text b>Geist UI</Text>
-        {' '}
-        !
-      </Text>
-    </Page>
-  </Main>
-);
+  return (
+    <Main
+      meta={(
+        <Meta
+          title="Next.js Boilerplate Presentation"
+          description="Next js Boilerplate is the perfect starter code for your project. Build your React application with the Next.js framework."
+        />
+    )}
+    >
+
+      <PackageInput onSelected={(pckg) => setPackageName(pckg)} />
+      { packageName
+      && <OutputDisplay packageName={packageName} className="mt-4" /> }
+    </Main>
+  );
+}
 
 export default Index;

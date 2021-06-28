@@ -1,6 +1,6 @@
 export const Config = {
-  site_name: 'Alan Qi Chen',
-  title: 'Alan Qi Chen',
-  description: 'Alan Qi Chen',
+  site_name: 'NPM Dependency Generator',
+  title: 'NPM Dependency Generator',
+  description: 'NPM Dependency Generator',
   locale: 'en',
 };

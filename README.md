@@ -1,7 +1,7 @@
-# My Personal Website (WIP)
+# NPM Dependency Generator
 
-This is my new, WIP website.
+Generates a dependency tree for npm packages.
 
-[Boiler-plate from Creative Designs Guru](https://github.com/ixartz/Next-js-Boilerplate)
+[Boiler-plate from Creative Designs Guru](https://creativedesignsguru.com)
 
 
