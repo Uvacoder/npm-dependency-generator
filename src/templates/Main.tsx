@@ -23,7 +23,7 @@ const Main = (props: IMainProps) => (
 
       <Divider />
       <Page.Footer className="text-center py-8 text-sm">
-        <a href="https://github.com/alanqchen">GitHub Repository</a>
+        <a href="https://github.com/alanqchen/npm-dependency-generator">GitHub Repository</a>
         {' '}
         | Made with
         {' '}

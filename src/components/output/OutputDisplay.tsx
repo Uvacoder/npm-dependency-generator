@@ -1,17 +1,20 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import {
-  Button, ButtonGroup, Card, Loading, Spinner, Tabs,
+  Badge,
+  Button, ButtonGroup, Card, Loading, Modal, Spinner, Tabs, useModal,
 } from '@geist-ui/react';
 import axios from 'axios';
 import {
   useQuery,
 } from 'react-query';
 
+import { ExportData } from './ExportData';
 import { buildGraph } from './GenerateDependencies';
 import { generateFileTree } from './GenerateFileTree';
 import { OutputBullets } from './OutputBullets';
 import { OutputFileTree } from './OutputFileTree';
+import { writeToCsv } from './WriteToCSV';
 
 function usePackage(packageName: string, version: string) {
   return useQuery(['package', packageName, version], async () => {
@@ -39,7 +42,10 @@ function useDepenTree(packageName: string, version: string) {
     const { graph } = await buildGraph(packageName, version);
     const newTree: any[] = [];
     generateFileTree(graph, `${packageName}@${version}`, newTree);
-    return newTree;
+    return {
+      graph,
+      tree: newTree,
+    };
   }, {
     enabled: !!version,
     retry: 0,
@@ -72,7 +78,7 @@ function OutputDisplay({ packageName, className } : OutputDisplayProps) {
   } = usePackage(name, version);
 
   const {
-    status: tStatus, data: tData,
+    status: gtStatus, data: gtData,
   } = useDepenTree(name, data?.parsedVer);
 
   return (
@@ -85,39 +91,47 @@ function OutputDisplay({ packageName, className } : OutputDisplayProps) {
         {(status === 'error' || (status !== 'loading' && !data.foundVer)) && <p>Failed to find package</p>}
         {(status === 'success' && data.foundVer)
         && (
-        <div className="flex flex-row">
-          <p className="text-sm flex-grow m-0">{data.description}</p>
-          <div className="ml-4">
-            {
-              tStatus === 'success'
+          <>
+            <div className="flex flex-row">
+              <div className="flex flex-col flex-grow">
+                <p className="text-sm m-0">{data.description}</p>
+                <div className="flex flex-row">
+                  <p className="uppercase text-gray-600 text-sm font-bold">Dependencies</p>
+                  <div className="flex items-center ml-2">
+                    <div>
+                      <Badge>{gtData?.graph.getNodesCount()}</Badge>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="ml-4">
+                {
+              gtStatus === 'success'
                 ? (
-                  <ButtonGroup type="success" size="small">
-                    <Button>CSV</Button>
-                    <Button>URL Text</Button>
-                  </ButtonGroup>
+                  <ExportData graph={gtData?.graph} />
                 )
                 : (
                   <>
-                    {console.log('mounted')}
                     <Spinner />
                   </>
                 )
             }
-          </div>
-        </div>
+              </div>
+            </div>
+          </>
         )}
       </Card>
       { status === 'success' && data.foundVer
         ? (
           <Tabs initialValue="file-tree" className="mt-4">
             <Tabs.Item label="File-Tree" value="file-tree">
-              {(tStatus === 'success' && data.foundVer)
-                ? <OutputFileTree tree={tData} />
+              {(gtStatus === 'success' && data.foundVer)
+                ? <OutputFileTree tree={gtData!.tree} />
                 : <Loading size="large" />}
             </Tabs.Item>
             <Tabs.Item label="Bullets" value="bullets">
-              {(tStatus === 'success' && data.foundVer)
-                ? <OutputBullets tree={tData} />
+              {(gtStatus === 'success' && data.foundVer)
+                ? <OutputBullets tree={gtData!.tree} />
                 : <Loading size="large" />}
             </Tabs.Item>
           </Tabs>
