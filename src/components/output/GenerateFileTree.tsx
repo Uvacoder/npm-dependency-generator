@@ -15,10 +15,6 @@ function generateFileTree(graph: any, rootID: string, fileTree: any[]) {
     data.license = licenseStr;
   }
 
-  if (typeof node.id !== 'string') {
-    console.log(node);
-  }
-
   if (!dependencies
     || Object.keys(dependencies).length === 0) {
     fileTree.push({
