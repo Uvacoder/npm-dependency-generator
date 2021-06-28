@@ -12,8 +12,8 @@ function Index() {
     <Main
       meta={(
         <Meta
-          title="Next.js Boilerplate Presentation"
-          description="Next js Boilerplate is the perfect starter code for your project. Build your React application with the Next.js framework."
+          title="NPM Dependency Generator"
+          description="Generates a list of dependencies for npm packages."
         />
     )}
     >

@@ -1,58 +1,15 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 import {
   Badge,
   Card, Loading, Spinner, Tabs,
 } from '@geist-ui/react';
-import axios from 'axios';
-import {
-  useQuery,
-} from 'react-query';
 
+import { Config } from '../../utils/Config';
 import { ExportData } from './ExportData';
-import { buildGraph } from './GenerateDependencies';
-import { generateFileTree } from './GenerateFileTree';
 import { OutputBullets } from './OutputBullets';
 import { OutputFileTree } from './OutputFileTree';
-
-function usePackage(packageName: string, version: string) {
-  return useQuery(['package', packageName, version], async () => {
-    const { data } = await axios.get(`https://registry.npmjs.cf/${packageName}`);
-    let parsedVer = version;
-    let foundVer = true;
-    if (version === 'latest') {
-      const keys = Object.keys(data.versions);
-      parsedVer = keys[keys.length - 1];
-    } else if (!(version in data.versions)) {
-      foundVer = false;
-    }
-    return {
-      ...data,
-      parsedVer,
-      foundVer,
-    };
-  }, {
-    retry: 1, refetchOnWindowFocus: false, refetchOnMount: false, refetchOnReconnect: false,
-  });
-}
-
-function useDepenTree(packageName: string, version: string) {
-  return useQuery(['graph', packageName, version], async () => {
-    const { graph } = await buildGraph(packageName, version);
-    const newTree: any[] = [];
-    generateFileTree(graph, `${packageName}@${version}`, newTree);
-    return {
-      graph,
-      tree: newTree,
-    };
-  }, {
-    enabled: !!version,
-    retry: 0,
-    refetchOnWindowFocus: false,
-    refetchOnMount: false,
-    refetchOnReconnect: false,
-  });
-}
+import { usePackage, useDepenTree } from './queries/queries';
 
 type OutputDisplayProps = React.HTMLAttributes<HTMLDivElement> & {
   packageName: string;
@@ -76,9 +33,30 @@ function OutputDisplay({ packageName, className } : OutputDisplayProps) {
     status, data, error, isFetching,
   } = usePackage(name, version);
 
+  const [nodeCount, setNodeCount] = useState(0);
+
+  type ChangeRecord = {
+    changeType: 'add' | 'remove' | 'update',
+    node?: any,
+    link?: any,
+  }[];
+
   const {
     status: gtStatus, data: gtData,
-  } = useDepenTree(name, data?.parsedVer);
+  } = useDepenTree(name, data?.parsedVer, (change: ChangeRecord) => {
+    if (change[0].changeType === 'add' && change[0].node) {
+      setNodeCount((count) => count + 1);
+    }
+  });
+
+  useEffect(() => () => {
+    // Cleanup
+    setNodeCount(0);
+    if (gtData) {
+      if (gtData.graph) gtData.graph = null;
+      if (gtData.tree) gtData.tree = null;
+    }
+  }, [packageName]);
 
   return (
     <div className={className}>
@@ -97,8 +75,14 @@ function OutputDisplay({ packageName, className } : OutputDisplayProps) {
                 <div className="flex flex-row">
                   <p className="uppercase text-gray-600 text-sm font-bold">Dependencies</p>
                   <div className="flex items-center ml-2">
-                    <div>
-                      {gtData ? <Badge>{gtData?.graph.getNodesCount()}</Badge> : <Spinner />}
+                    <div className="flex">
+                      {(gtStatus === 'loading' && nodeCount !== 0) && <Badge>{nodeCount}</Badge>}
+                      {(gtData && gtStatus === 'success')
+                        ? (
+                          <Badge>
+                            {gtData?.graph.getNodesCount()}
+                          </Badge>
+                        ) : <Spinner className="ml-1" />}
                     </div>
                   </div>
                 </div>
@@ -124,14 +108,18 @@ function OutputDisplay({ packageName, className } : OutputDisplayProps) {
         ? (
           <Tabs initialValue="file-tree" className="mt-4">
             <Tabs.Item label="File-Tree" value="file-tree">
-              {(gtStatus === 'success' && data.foundVer)
-                ? <OutputFileTree tree={gtData!.tree} />
-                : <Loading size="large" />}
+              {gtStatus === 'loading' && <Loading size="large" />}
+              {(gtStatus === 'success' && data.foundVer && gtData && gtData.graph && gtData.graph.getNodesCount() < Config.maxDependCount)
+                && <OutputFileTree tree={gtData!.tree} />}
+              {(gtStatus === 'success' && data.foundVer && gtData && gtData.graph && gtData.graph.getNodesCount() >= Config.maxDependCount)
+                && <p>Too many dependencies to display file-tree.</p>}
             </Tabs.Item>
             <Tabs.Item label="Bullets" value="bullets">
-              {(gtStatus === 'success' && data.foundVer)
-                ? <OutputBullets tree={gtData!.tree} />
-                : <Loading size="large" />}
+              {gtStatus === 'loading' && <Loading size="large" />}
+              {(gtStatus === 'success' && data.foundVer && gtData && gtData.graph && gtData.graph.getNodesCount() < Config.maxDependCount)
+                && <OutputBullets tree={gtData!.tree} />}
+              {(gtStatus === 'success' && data.foundVer && gtData && gtData.graph && gtData.graph.getNodesCount() >= Config.maxDependCount)
+                && <p>Too many dependencies to display file-tree.</p>}
             </Tabs.Item>
           </Tabs>
         )

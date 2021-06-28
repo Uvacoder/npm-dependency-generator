@@ -3,6 +3,22 @@ function generateFileTree(graph: any, rootID: string, fileTree: any[]) {
   const { data } = node;
   const { dependencies } = data;
 
+  // Some package nodes have an array of licenses instead of a single license key
+  if (data.licenses) {
+    let licenseStr = '';
+    for (let i = 0; i < data.licenses.length; i += 1) {
+      licenseStr += data.licenses[i].type;
+      if (i !== data.licenses.length - 1) {
+        licenseStr += ', ';
+      }
+    }
+    data.license = licenseStr;
+  }
+
+  if (typeof node.id !== 'string') {
+    console.log(node);
+  }
+
   if (!dependencies
     || Object.keys(dependencies).length === 0) {
     fileTree.push({

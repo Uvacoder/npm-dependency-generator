@@ -3,4 +3,5 @@ export const Config = {
   title: 'NPM Dependency Generator',
   description: 'NPM Dependency Generator',
   locale: 'en',
+  maxDependCount: 260,
 };
