@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { useQuery } from 'react-query';
 
+import { Config } from '../../../utils/Config';
 import { createGraph, buildGraph } from '../GenerateDependencies';
 import { generateFileTree } from '../GenerateFileTree';
 
@@ -25,7 +26,7 @@ function usePackage(packageName: string, version: string) {
     refetchOnWindowFocus: false,
     refetchOnMount: false,
     refetchOnReconnect: false,
-    cacheTime: 1000 * 5,
+    cacheTime: 0,
   });
 }
 
@@ -41,7 +42,9 @@ function useDepenTree(packageName: string, version: string,
     const { graph } = createGraph(onChange);
     await buildGraph(packageName, version, graph);
     const newTree: any = [];
-    generateFileTree(graph, `${packageName}@${version}`, newTree);
+    if (graph.getNodesCount() < Config.maxDependCount) {
+      generateFileTree(graph, `${packageName}@${version}`, newTree);
+    }
     return {
       graph,
       tree: newTree,
@@ -52,7 +55,7 @@ function useDepenTree(packageName: string, version: string,
     refetchOnWindowFocus: false,
     refetchOnMount: false,
     refetchOnReconnect: false,
-    cacheTime: 1000 * 5,
+    cacheTime: 0,
   });
 }
 

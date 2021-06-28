@@ -29,7 +29,6 @@ async function buildGraph(packageName: string, version: string, graph: any)
       success = false;
       resultError = err;
     });
-  console.log('returning graph!');
   return {
     success,
     graph,
