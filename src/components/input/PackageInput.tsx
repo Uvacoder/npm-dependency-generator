@@ -46,7 +46,7 @@ function PackageInput({ onSelected } : InputProps) {
         size="large"
         width="100%"
         options={options}
-        placeholder="NPM Package Name"
+        placeholder="NPM Package Name (version optional)"
         onSearch={searchHandler}
         className="flex-grow"
       />
