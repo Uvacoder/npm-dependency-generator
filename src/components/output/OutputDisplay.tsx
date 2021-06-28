@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 import {
   Badge,
-  Button, ButtonGroup, Card, Loading, Modal, Spinner, Tabs, useModal,
+  Card, Loading, Spinner, Tabs,
 } from '@geist-ui/react';
 import axios from 'axios';
 import {
@@ -14,7 +14,6 @@ import { buildGraph } from './GenerateDependencies';
 import { generateFileTree } from './GenerateFileTree';
 import { OutputBullets } from './OutputBullets';
 import { OutputFileTree } from './OutputFileTree';
-import { writeToCsv } from './WriteToCSV';
 
 function usePackage(packageName: string, version: string) {
   return useQuery(['package', packageName, version], async () => {
@@ -99,7 +98,7 @@ function OutputDisplay({ packageName, className } : OutputDisplayProps) {
                   <p className="uppercase text-gray-600 text-sm font-bold">Dependencies</p>
                   <div className="flex items-center ml-2">
                     <div>
-                      <Badge>{gtData?.graph.getNodesCount()}</Badge>
+                      {gtData ? <Badge>{gtData?.graph.getNodesCount()}</Badge> : <Spinner />}
                     </div>
                   </div>
                 </div>
@@ -136,7 +135,7 @@ function OutputDisplay({ packageName, className } : OutputDisplayProps) {
             </Tabs.Item>
           </Tabs>
         )
-        : <Loading size="large" />}
+        : (status !== 'error') && <Loading size="large" />}
     </div>
   );
 }

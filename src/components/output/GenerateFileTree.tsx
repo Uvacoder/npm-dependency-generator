@@ -3,7 +3,6 @@ function generateFileTree(graph: any, rootID: string, fileTree: any[]) {
   const { data } = node;
   const { dependencies } = data;
 
-  console.log(data);
   if (!dependencies
     || Object.keys(dependencies).length === 0) {
     fileTree.push({

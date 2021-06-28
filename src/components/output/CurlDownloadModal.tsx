@@ -17,11 +17,11 @@ function CurlOutputModal({ bindings } : CurlOutputModalProps) {
       <Modal.Content>
         <ol>
           <li>
-            First, download the CSV and place it in the
+            Download the CSV and place it in the
             directory where you want to download the dependencies.
           </li>
           <li>
-            Then run the following command:
+            Run the following command in the directory:
           </li>
         </ol>
         <Snippet text='grep "https://registry.npmjs.org" generatedBy_react-csv.csv | cut -d, -f 4 | xargs -n 1 curl -O' />

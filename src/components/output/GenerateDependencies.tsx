@@ -1,6 +1,5 @@
 import axios from 'axios';
 
-const graph = require('ngraph.graph')({ uniqueLinkId: false });
 const createGraphBuilder = require('npmgraphbuilder');
 
 type BuildGraphReturn = {
@@ -10,6 +9,8 @@ type BuildGraphReturn = {
 };
 
 async function buildGraph(packageName: string, version: string): Promise<BuildGraphReturn> {
+  // eslint-disable-next-line global-require
+  const graph = require('ngraph.graph')({ uniqueLinkId: false });
   const graphBuilder = createGraphBuilder((url: string) => axios.get(url), 'https://registry.npmjs.cf/');
   let success = false;
   let resultGraph = null;
@@ -17,16 +18,11 @@ async function buildGraph(packageName: string, version: string): Promise<BuildGr
 
   await graphBuilder.createNpmDependenciesGraph(packageName, graph, version)
     .then((resGraph: { getNodesCount: () => any; getLinksCount: () => any; }) => {
-      console.log('Done.');
-      console.log('Nodes count: ', resGraph.getNodesCount());
-      console.log('Edges count: ', resGraph.getLinksCount());
       resultGraph = resGraph;
     }, (err: any) => {
-      console.error('Failed to build graph: ', err);
       success = false;
       resultError = err;
     });
-  console.log('exit function');
   return {
     success,
     graph: resultGraph,
