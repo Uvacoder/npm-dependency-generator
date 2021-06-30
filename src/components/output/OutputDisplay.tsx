@@ -19,7 +19,7 @@ type OutputDisplayProps = React.HTMLAttributes<HTMLDivElement> & {
 
 function OutputDisplay({ packageName, showDisplay, className } : OutputDisplayProps) {
   // eslint-disable-next-line no-useless-escape
-  const regExp = /(@?\S+[^@])@([\d\.]+)?$/;
+  const regExp = /(@?\S+[^@])@([\S]+)?$/;
   const regExpLatest = /@latest$/;
   const matches = packageName.match(regExp);
   let name = packageName;
