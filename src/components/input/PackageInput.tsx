@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 
-import { AutoComplete, Button } from '@geist-ui/react';
+import {
+  AutoComplete, Button, Divider, Toggle,
+} from '@geist-ui/react';
 import axios from 'axios';
 
 interface ServerResponse {
@@ -17,9 +19,11 @@ type PackageData = {
 
 type InputProps = {
   onSelected?: (packageName: string) => void;
+  showDisplay: boolean;
+  onToggle?: () => void;
 };
 
-function PackageInput({ onSelected } : InputProps) {
+function PackageInput({ onSelected, showDisplay, onToggle } : InputProps) {
   const [selectedValue, setSelectedValue] = useState('');
   const [options, setOptions] = useState<Array<{ label: string; value: string; }>>();
   const searchHandler = (currentValue : string) => {
@@ -40,26 +44,33 @@ function PackageInput({ onSelected } : InputProps) {
     return null;
   };
   return (
-    <div className="flex">
-      <AutoComplete
-        clearable
-        size="large"
-        width="100%"
-        options={options}
-        placeholder="NPM Package Name (version optional)"
-        onSearch={searchHandler}
-        className="flex-grow"
-      />
-      <Button
-        auto
-        type="secondary"
-        className="ml-4"
-        onClick={onSelected ? () => onSelected(selectedValue) : undefined}
-      >
-        Generate
+    <>
+      <div className="flex row items-center">
+        <Toggle size="large" checked={showDisplay} onChange={onToggle ? () => onToggle() : undefined} />
+        <p className="text-sm ml-2 mt-0 mb-0">Show file-tree (unstable on large packages)</p>
+      </div>
+      <Divider />
+      <div className="flex">
+        <AutoComplete
+          clearable
+          size="large"
+          width="100%"
+          options={options}
+          placeholder="NPM Package Name (version optional)"
+          onSearch={searchHandler}
+          className="flex-grow"
+        />
+        <Button
+          auto
+          type="secondary"
+          className="ml-4"
+          onClick={onSelected ? () => onSelected(selectedValue) : undefined}
+        >
+          Generate
 
-      </Button>
-    </div>
+        </Button>
+      </div>
+    </>
   );
 }
 

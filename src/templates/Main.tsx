@@ -17,7 +17,6 @@ const Main = (props: IMainProps) => (
       <Page.Header className="pt-16 pb-8">
         <div className="font-bold text-3xl text-gray-900">{Config.title}</div>
       </Page.Header>
-      <Divider />
 
       <div className="py-5 text-xl content">{props.children}</div>
 

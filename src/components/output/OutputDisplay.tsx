@@ -13,10 +13,11 @@ import { usePackage, useDepenTree } from './queries/queries';
 
 type OutputDisplayProps = React.HTMLAttributes<HTMLDivElement> & {
   packageName: string;
+  showDisplay: boolean;
   className?: string
 };
 
-function OutputDisplay({ packageName, className } : OutputDisplayProps) {
+function OutputDisplay({ packageName, showDisplay, className } : OutputDisplayProps) {
   // eslint-disable-next-line no-useless-escape
   const regExp = /(@?\S+[^@])@([\d\.]+)?$/;
   const regExpLatest = /@latest$/;
@@ -104,7 +105,7 @@ function OutputDisplay({ packageName, className } : OutputDisplayProps) {
           </>
         )}
       </Card>
-      { status === 'success' && data.foundVer
+      { showDisplay && status === 'success' && data.foundVer
         ? (
           <Tabs initialValue="file-tree" className="mt-4">
             <Tabs.Item label="File-Tree" value="file-tree">

@@ -7,6 +7,11 @@ import { Main } from '../templates/Main';
 
 function Index() {
   const [packageName, setPackageName] = useState('');
+  const [showDisplay, setShowDisplay] = useState(false);
+
+  const toggleDisplay = () => {
+    setShowDisplay(!showDisplay);
+  };
 
   return (
     <Main
@@ -17,10 +22,13 @@ function Index() {
         />
     )}
     >
-
-      <PackageInput onSelected={(pckg) => setPackageName(pckg)} />
+      <PackageInput
+        onSelected={(pckg) => setPackageName(pckg)}
+        showDisplay={showDisplay}
+        onToggle={toggleDisplay}
+      />
       { packageName
-      && <OutputDisplay packageName={packageName} className="mt-4" /> }
+      && <OutputDisplay packageName={packageName} showDisplay={showDisplay} className="mt-4" /> }
     </Main>
   );
 }
