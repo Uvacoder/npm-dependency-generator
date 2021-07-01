@@ -11,8 +11,7 @@ function usePackage(packageName: string, version: string) {
     let parsedVer = version;
     let foundVer = true;
     if (version === 'latest') {
-      const keys = Object.keys(data.versions);
-      parsedVer = keys[keys.length - 1];
+      parsedVer = data['dist-tags'].latest;
     } else if (!(version in data.versions)) {
       foundVer = false;
     }
