@@ -26,7 +26,7 @@ function CurlOutputModal({ bindings } : CurlOutputModalProps) {
         </ol>
         <Snippet text='grep "https://registry.npmjs.org" generatedBy_react-csv.csv | cut -d, -f 4 | xargs -n 1 curl -O' />
         <p className="font-bold">Windows PowerShell</p>
-        <Snippet text='Import-Csv .\generatedBy_react-csv.csv | ForEach-Object {Invoke-WebRequest -Uri $_."DIST URL" -OutFile "$($_.NAME -replace "\\|/", "-")-$($_.VERSION).tgz"}' />
+        <Snippet text='Import-Csv .\generatedBy_react-csv.csv | ForEach-Object {Invoke-WebRequest -Uri $_."DIST URL" -OutFile ( New-Item -Force -Path ".\$($_.NAME)-$($_.VERSION).tgz")}' />
       </Modal.Content>
     </Modal>
   );
